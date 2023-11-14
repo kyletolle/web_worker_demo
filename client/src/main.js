@@ -1,4 +1,3 @@
-import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 const worker = new Worker('./src/worker.js');
 
 const setUpCalculator = () => {
@@ -59,39 +58,44 @@ const setUpColors = () => {
   fetchColors();
 };
 
-const setUpSocket = () => {
-  const socket = io('http://localhost:8000');
-  socket.on('connect', () => {
-    console.info('Socket connected!');
-  });
+const setUpSocketWorker = () => {
+  const socketWorker = new Worker('./src/socketWorker.js', { type: 'module' });
 
-  socket.on('server.colorsFetched', event => {
-    const colors = event.colors;
-    const colorsDiv = document.getElementById('socketColors');
-    const colorResult = document.createElement('div');
-    colorResult.classList.add('colorResult');
+  socketWorker.onmessage = event => {
+    const { type } = event.data;
+    switch (type) {
+      case 'colorsFetched':
+        const { colors } = event.data;
+        const colorsDiv = document.getElementById('socketColors');
+        const colorResult = document.createElement('div');
+        colorResult.classList.add('colorResult');
 
-    for (const color of colors) {
-      const colorDiv = document.createElement('div');
-      colorDiv.classList.add('color');
-      colorDiv.style.backgroundColor = color;
-      colorResult.appendChild(colorDiv);
+        for (const color of colors) {
+          const colorDiv = document.createElement('div');
+          colorDiv.classList.add('color');
+          colorDiv.style.backgroundColor = color;
+          colorResult.appendChild(colorDiv);
+        }
+        colorsDiv.appendChild(colorResult);
+        colorResult.scrollIntoView(false);
+        break;
+      default:
+        console.error('Invalid message type', event.data);
+        throw new Error('Invalid message type')
     }
-    colorsDiv.appendChild(colorResult);
-    colorResult.scrollIntoView(false);
-  })
+  };
+
   const fetchColors = () => {
-    const randomNumberOfColors = Math.floor(Math.random() * 10) + 1;
-    socket.emit('client.fetchColors', { numberToFetch: randomNumberOfColors });
+    socketWorker.postMessage({ type: 'fetchColors' });
   }
 
   const socketFetchButton = document.getElementById('fetchSocketColors');
   socketFetchButton.addEventListener('click', fetchColors);
+};
 
-}
 
 window.onload = () => {
   setUpCalculator();
   setUpColors();
-  setUpSocket();
+  setUpSocketWorker();
 }

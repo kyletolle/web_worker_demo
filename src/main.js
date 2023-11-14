@@ -6,22 +6,20 @@ window.onload = () => {
   const number1 = document.getElementById('number1');
   const number2 = document.getElementById('number2');
   const result = document.getElementById('result');
-  console.info("What is number1?", number1);
-  console.info("What is number2?", number2);
-  console.info('What is result?', result);
 
-  number1.addEventListener('change', () => {
-    worker.postMessage([number1.value, number2.value]);
-  });
+  const changeHandler = () => {
+    worker.postMessage([number1.value, number2.value, calculation.value]);
+  }
 
-  number2.addEventListener('change', () => {
-    worker.postMessage([number1.value, number2.value]);
-  });
-
+  // Read from the calculation select to get what operation we want to perform.
+  const calculation = document.getElementById('calculation');
+  number1.addEventListener('change', changeHandler);
+  number2.addEventListener('change', changeHandler);
+  calculation.addEventListener('change', changeHandler);
   worker.onmessage = e => {
     console.info('Message received from worker', e.data);
     result.value = e.data;
   }
 
-  worker.postMessage([number1.value, number2.value]);
+  changeHandler();
 }

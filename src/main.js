@@ -22,4 +22,31 @@ window.onload = () => {
   }
 
   changeHandler();
+
+  const colorsWorker = new Worker('./src/colors.js');
+  const colorsButton = document.getElementById('fetchColors');
+  const fetchColors = () => {
+    colorsWorker.postMessage('fetchColor');
+    colorsWorker.postMessage('fetchColor');
+    colorsWorker.postMessage('fetchColor');
+    colorsWorker.postMessage('fetchColor');
+    colorsWorker.postMessage('fetchColor');
+  }
+  colorsButton.addEventListener('click', fetchColors);
+  colorsWorker.onmessage = e => {
+    // Create a new LI element with the random color text as well as a div that has that color as the background. Then add it to the list.
+    const color = e.data;
+    const li = document.createElement('li');
+    li.innerText = color;
+    const div = document.createElement('div');
+    div.style.backgroundColor = color;
+    div.style.width = '20px';
+    div.style.height = '20px';
+    div.style.display = 'inline-block';
+    div.style.marginRight = '10px';
+    li.prepend(div);
+    document.getElementById('colors').appendChild(li);
+  };
+
+  fetchColors();
 }

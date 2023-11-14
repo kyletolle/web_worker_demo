@@ -19,7 +19,7 @@ onmessage = e => {
   const { type } = e.data;
   switch (type) {
     case 'fetchColors':
-      const randomNumberOfColors = Math.floor(Math.random() * 10) + 1;
+      const randomNumberOfColors = Math.floor(Math.random() * 100) + 1;
       socket.emit('client.fetchColors', { numberToFetch: randomNumberOfColors });
       break;
 

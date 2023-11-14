@@ -1,13 +1,16 @@
-const worker = new Worker(new URL('worker.js', import.meta.url));
+const calculatorWorker = new Worker(new URL('calculatorWorker.js', import.meta.url));
 
 const setUpCalculator = () => {
-  // When number 1 and 2 from index.html change, we want to trigger a message to the worker. When the worker responds, we want to update the result in index.html.
+  /**
+   * When number 1 and 2 from index.html change, we want to trigger a message to the worker.
+   * When the worker responds, we want to update the result in index.html.
+   */
   const number1 = document.getElementById('number1');
   const number2 = document.getElementById('number2');
   const result = document.getElementById('result');
 
   const changeHandler = () => {
-    worker.postMessage([number1.value, number2.value, calculation.value]);
+    calculatorWorker.postMessage([number1.value, number2.value, calculation.value]);
   }
 
   // Read from the calculation select to get what operation we want to perform.
@@ -15,15 +18,20 @@ const setUpCalculator = () => {
   number1.addEventListener('change', changeHandler);
   number2.addEventListener('change', changeHandler);
   calculation.addEventListener('change', changeHandler);
-  worker.onmessage = e => {
+  calculatorWorker.onmessage = e => {
     result.value = e.data;
   }
 
   changeHandler();
+
+  return () => {
+    console.info('Terminating calculator worker')
+    calculatorWorker.terminate();
+  }
 };
 
 const setUpColors = () => {
-  const colorsWorker = new Worker(new URL('colors.js', import.meta.url));
+  const colorsWorker = new Worker(new URL('colorsWorker.js', import.meta.url));
   const colorsButton = document.getElementById('fetchColors');
   const fetchColors = () => {
     const colorsDiv = document.getElementById('colors');
@@ -40,7 +48,10 @@ const setUpColors = () => {
   }
   colorsButton.addEventListener('click', fetchColors);
   colorsWorker.onmessage = e => {
-    // Create a new LI element with the random color text as well as a div that has that color as the background. Then add it to the list.
+    /**
+     * Create a new LI element with the random color text as well as a div that has that color as
+     * the background. Then add it to the list.
+     */
     const color = e.data;
     const li = document.createElement('li');
     li.innerText = color;
@@ -56,9 +67,14 @@ const setUpColors = () => {
   };
 
   fetchColors();
+
+  return () => {
+    console.info('Terminating colors worker');
+    colorsWorker.terminate();
+  };
 };
 
-const setUpSocketWorker = () => {
+const setUpSocket = () => {
   const socketWorker = new Worker(
     new URL('socketWorker.js', import.meta.url),
     { type: 'module' }
@@ -94,11 +110,22 @@ const setUpSocketWorker = () => {
 
   const socketFetchButton = document.getElementById('fetchSocketColors');
   socketFetchButton.addEventListener('click', fetchColors);
+
+  return () => {
+    console.info('Terminating socket worker');
+    socketWorker.terminate();
+  }
 };
 
 
+const terminateFns = [];
 window.onload = () => {
-  setUpCalculator();
-  setUpColors();
-  setUpSocketWorker();
-}
+  const terminateCalculator = setUpCalculator();
+  const terminateColors = setUpColors();
+  const terminateSocket = setUpSocket();
+  terminateFns.push(terminateCalculator, terminateColors, terminateSocket);
+};
+
+window.onunload = () => {
+  terminateFns.forEach(terminateFn => terminateFn());
+};

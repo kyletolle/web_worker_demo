@@ -24,8 +24,6 @@ onmessage = e => {
   postMessage(workerResult);
 }
 
-
-
 class Calculator {
   constructor() {
   }

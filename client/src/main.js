@@ -1,4 +1,4 @@
-const worker = new Worker('./src/worker.js');
+const worker = new Worker(new URL('worker.js', import.meta.url));
 
 const setUpCalculator = () => {
   // When number 1 and 2 from index.html change, we want to trigger a message to the worker. When the worker responds, we want to update the result in index.html.
@@ -23,7 +23,7 @@ const setUpCalculator = () => {
 };
 
 const setUpColors = () => {
-  const colorsWorker = new Worker('./src/colors.js');
+  const colorsWorker = new Worker(new URL('colors.js', import.meta.url));
   const colorsButton = document.getElementById('fetchColors');
   const fetchColors = () => {
     const colorsDiv = document.getElementById('colors');
@@ -59,7 +59,10 @@ const setUpColors = () => {
 };
 
 const setUpSocketWorker = () => {
-  const socketWorker = new Worker('./src/socketWorker.js', { type: 'module' });
+  const socketWorker = new Worker(
+    new URL('socketWorker.js', import.meta.url),
+    { type: 'module' }
+  );
 
   socketWorker.onmessage = event => {
     const { type } = event.data;

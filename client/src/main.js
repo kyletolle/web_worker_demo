@@ -1,7 +1,7 @@
+import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 const worker = new Worker('./src/worker.js');
 
-// When the page has loaded, we want to run the code in this function.
-window.onload = () => {
+const setUpCalculator = () => {
   // When number 1 and 2 from index.html change, we want to trigger a message to the worker. When the worker responds, we want to update the result in index.html.
   const number1 = document.getElementById('number1');
   const number2 = document.getElementById('number2');
@@ -17,12 +17,14 @@ window.onload = () => {
   number2.addEventListener('change', changeHandler);
   calculation.addEventListener('change', changeHandler);
   worker.onmessage = e => {
-    console.info('Message received from worker', e.data);
+    // console.info('Message received from worker', e.data);
     result.value = e.data;
   }
 
   changeHandler();
+};
 
+const setUpColors = () => {
   const colorsWorker = new Worker('./src/colors.js');
   const colorsButton = document.getElementById('fetchColors');
   const fetchColors = () => {
@@ -49,4 +51,45 @@ window.onload = () => {
   };
 
   fetchColors();
+};
+
+const setUpSocket = () => {
+  const socket = io('http://localhost:8000');
+  socket.on('connect', () => {
+    console.info('Socket connected!');
+  });
+
+  socket.on('server.colorsFetched', event => {
+    console.info('Server sent us the following colors', event);
+    // TODO: Create a DIV with a div inside for each color. The inner div for each color should have that color be the background color. Then they should all be in a row thanks to CSS.
+    const colors = event.colors;
+    const colorsDiv = document.getElementById('socketColors');
+    const colorResult = document.createElement('div');
+    colorResult.classList.add('colorResult');
+
+    for (const color of colors) {
+      const colorDiv = document.createElement('div');
+
+      // Make div have a style class named colorResult
+      colorDiv.classList.add('color');
+      colorDiv.style.backgroundColor = color;
+      colorResult.appendChild(colorDiv);
+    }
+    colorsDiv.appendChild(colorResult);
+  })
+  const fetchColors = () => {
+    console.info('Socket fetch colors event handler');
+    const randomNumberOfColors = Math.floor(Math.random() * 10) + 1;
+    socket.emit('client.fetchColors', { numberToFetch: randomNumberOfColors });
+  }
+
+  const socketFetchButton = document.getElementById('fetchSocketColors');
+  socketFetchButton.addEventListener('click', fetchColors);
+
+}
+
+window.onload = () => {
+  setUpCalculator();
+  setUpColors();
+  setUpSocket();
 }

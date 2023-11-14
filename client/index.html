@@ -2,6 +2,32 @@
   <head>
     <title>Web Workers Demo</title>
     <meta charset="UTF-8" />
+    <style>
+      div#socketColors {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+
+        .colorResult {
+          width: 300px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          margin: 5px;
+          padding: 5px;
+          border: 1px solid black;
+
+          .color {
+            width: 20px;
+            height: 20px;
+            &:not(:last-child) {
+              margin-right: 5px;
+            }
+          }
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -11,7 +37,7 @@
 
     <p>Here are several ways we can use web workers!</p>
 
-    <script src="src/main.js"></script>
+    <script src="src/main.js" type="module"></script>
 
     <h2>Calculator</h2>
     <!-- Want to add two number inputs that we can read values from to calculate a value. And have another string input where the result of the calculation can be written.-->
@@ -34,5 +60,13 @@
         <!-- List items will go here -->
       </ul>
     <!-- Want to add a button that when clicked will dispatch five messages to the worker, each to fetch a random color from the API. When the message comes back it should dislpay the color in a list. -->
+
+    <hr />
+    <h2>Socket Color Fetching</h2>
+    <p>Testing fetching colors from a server that's using worker threads over a socket.</p>
+    <button id="fetchSocketColors">Fetch N Random Colors</button>
+    <div id="socketColors">
+        <!-- Socket colors will go here -->
+    </div>
   </body>
 </html>

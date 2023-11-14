@@ -24,7 +24,7 @@ const fetchColors = async () => {
 
     // Need to read the color from the page body as text
     const color = await response.text();
-    console.info('Color received from API', color);
+    // console.info('Color received from API', color);
     postMessage(color);
     numberOfColorsToGenerate--;
   }

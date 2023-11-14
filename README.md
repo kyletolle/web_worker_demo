@@ -1,19 +1,7 @@
 # Web Worker Demo
 
-This is a demo to check out how to use Web Workers in the browser.
+We have a client that can use the browser's Web Workers and we have a server that can use Node's Worker Threads.
 
-## Installing
+## Usage
 
-```
-npm install
-```
-
-## Running
-
-```
-npm run dev
-```
-
-## Using
-
-Visit http://localhost:3000
+See `./client/README.md` and `./server/README.md` for getting them both running.

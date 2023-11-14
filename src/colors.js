@@ -8,8 +8,6 @@ onmessage = e => {
   fetchColors();
 }
 
-
-
 const fetchColors = async () => {
   if (isFetchInProgress) {
     return;
@@ -17,7 +15,6 @@ const fetchColors = async () => {
 
   isFetchInProgress = true;
   while(numberOfColorsToGenerate > 0) {
-    // Need to add no cors to the request because the API doesn't have CORS enabled.
     const response = await fetch(colorApiUrl);
     if (!response.ok) {
       console.error('Error fetching color', response);

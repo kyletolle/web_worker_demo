@@ -1,6 +1,4 @@
 onmessage = e => {
-  console.info('Worker received message from main', e.data);
-
   const number1 = parseInt(e.data[0], 10);
   const number2 = parseInt(e.data[1], 10);
   const calculation = e.data[2];
@@ -23,7 +21,6 @@ onmessage = e => {
     default:
       throw new Error('Invalid calculation');
   }
-  console.info('Worker posting message back to main');
   postMessage(workerResult);
 }
 

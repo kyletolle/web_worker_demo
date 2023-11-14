@@ -17,7 +17,6 @@ const setUpCalculator = () => {
   number2.addEventListener('change', changeHandler);
   calculation.addEventListener('change', changeHandler);
   worker.onmessage = e => {
-    // console.info('Message received from worker', e.data);
     result.value = e.data;
   }
 
@@ -28,6 +27,12 @@ const setUpColors = () => {
   const colorsWorker = new Worker('./src/colors.js');
   const colorsButton = document.getElementById('fetchColors');
   const fetchColors = () => {
+    const colorsDiv = document.getElementById('colors');
+    if (colorsDiv.children.length > 0) {
+      const spacerLi = document.createElement('li');
+      spacerLi.innerText = '-----------------';
+      colorsDiv.appendChild(spacerLi);
+    }
     colorsWorker.postMessage('fetchColor');
     colorsWorker.postMessage('fetchColor');
     colorsWorker.postMessage('fetchColor');
@@ -48,6 +53,7 @@ const setUpColors = () => {
     div.style.marginRight = '10px';
     li.prepend(div);
     document.getElementById('colors').appendChild(li);
+    li.scrollIntoView(false);
   };
 
   fetchColors();
@@ -60,8 +66,6 @@ const setUpSocket = () => {
   });
 
   socket.on('server.colorsFetched', event => {
-    console.info('Server sent us the following colors', event);
-    // TODO: Create a DIV with a div inside for each color. The inner div for each color should have that color be the background color. Then they should all be in a row thanks to CSS.
     const colors = event.colors;
     const colorsDiv = document.getElementById('socketColors');
     const colorResult = document.createElement('div');
@@ -69,16 +73,14 @@ const setUpSocket = () => {
 
     for (const color of colors) {
       const colorDiv = document.createElement('div');
-
-      // Make div have a style class named colorResult
       colorDiv.classList.add('color');
       colorDiv.style.backgroundColor = color;
       colorResult.appendChild(colorDiv);
     }
     colorsDiv.appendChild(colorResult);
+    colorResult.scrollIntoView(false);
   })
   const fetchColors = () => {
-    console.info('Socket fetch colors event handler');
     const randomNumberOfColors = Math.floor(Math.random() * 10) + 1;
     socket.emit('client.fetchColors', { numberToFetch: randomNumberOfColors });
   }

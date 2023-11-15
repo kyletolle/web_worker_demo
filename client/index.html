@@ -7,30 +7,30 @@
         margin-top: 10px;
         display: flex;
         flex-direction: column;
+      }
 
-        .colorResult {
-          width: 100%;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: center;
-          margin: 5px;
-          padding: 5px;
-          border: 1px solid black;
+      div#socketColors .colorResult {
+        width: 100%;
+        height: 50px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        padding: 5px;
+        border: 1px solid black;
+      }
 
-          .color {
-            --size: min(10vw, 10px);
-            width: var(--size);
-            height: var(--size);
-            flex-grow: 0;
-            flex-basis: auto;
-            align-self: center;
+      div#socketColors .colorResult .color {
+        --size: 20px;
+        width: var(--size);
+        height: var(--size);
+        flex-grow: 0;
+        flex-basis: auto;
+        align-self: center;
 
-            &:not(:last-child) {
-              margin-right: min(1%, 2px);
-            }
-          }
+        &:not(:last-child) {
+          margin-right: min(1%, 2px);
         }
       }
     </style>
